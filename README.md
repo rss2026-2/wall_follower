@@ -22,7 +22,7 @@ In this lab you will meet your team for the rest of the semester. You will then 
 ### Racecars
 Your team will be assigned a racecar to take care of during the semester.  These cars are expensive so please coordinate with your team to ensure that someone is always responsible for it and avoid leaving it unattended on campus.
 
-The racecar platform is exciting and fast, but it is not a toy. It is made up of expensive components that should last for future iterations of the class. It is your responsibility to keep it in good condition. The racecar can survive a couple light bumps, but if it goes at top speed into a wall it can be destroyed.  We understand accidents happen, so if something comes loose or there are other minor issues please tell the TAs as soon as possible and we can help fix things. We expect a few minor issues throughout the semester, as one does when dealing with hardware, so typically its not a big deal. However, if you damage the car in an extreme way due to obviously reckless behavior, you may find yourself working on a simulated car for the rest of the course. 
+The racecar platform is exciting and fast, but it is not a toy. It is made up of expensive components that should last for future iterations of the class. It is your responsibility to keep it in good condition. The racecar can survive a couple light bumps, but if it goes at top speed into a wall it can be destroyed.  We understand accidents happen, so if something comes loose or there are other minor issues please tell the TAs as soon as possible and we can help fix things. We expect a few minor issues throughout the semester, as one does when dealing with hardware, so typically it's not a big deal. However, if you damage the car in an extreme way due to obviously reckless behavior, you may find yourself working on a simulated car for the rest of the course. 
 
 
 ### Electrical Safety
@@ -71,6 +71,14 @@ Please find your teams for Spring 2026 [here]()!
 
 Each team will be using a Github website in order to organize and publish their reports and briefings.  Instructions on how to create this site and organization can be found [here](https://github.com/mit-rss/website2022). 
 
+### Note on Team Charter & Project Management
+
+Each team must create a Team Charter & Project Management document. This document should include agreements about your goals, how you will communicate and handle the management of your project, as well as an online meeting agenda with space for meeting topics, decisions and action items, and a detailed timeline with milestones and associated tasks, personnel allocation, start and end time for tasks, progress status, etc.
+
+- The charter and agenda should be created in a shared online document that is kept up-to-date and shared with the course staff in the About section of your online portfolio. Please make sure to give access to this document to the entire RSS staff/TAs. 
+- The CI instructors will provide guidance as you develop your Team Charter.
+- In addition, we recommend that you create a Google drive for your car team where you will collect all your project materials.
+
 ## Part 1: Simulation (Technical Assignment)
 
 ### Safety Controller
@@ -97,9 +105,13 @@ While developing and iterating on your combined algorithm, consider how you can 
 Questions to help with evaluating your wall follower:
 - How do you know when your wall follower is performing well?
 - What data can you collect to quantitatively evaluate wall-following performance?
+- What metrics are you using as part of your evaluation?
+- How many repeated tests are you using?
+- How do you ensure repeatability?  
 - What race conditions (especially racecar speeds and racecar paths) should you test on to best determine performance?
 - What graphs/visuals can you create to help make evaluation easier
 
+Remember -- we do not grade the quality of your code. Your briefing and lab report will be graded (in part) on how well you assess the performance of your system. 
 
 ## Part 2: Getting Started with the RACECAR Platform!
 
@@ -286,7 +298,7 @@ __Please be careful when you are testing__. Always have your joystick ready to s
 
 ### Wall Following
 
-Just as you did for the safety controller, get your team's updated wall following code onto the car. ***Remember to*** ```colcon build``` in the root of your workspace to rebuild it and then ```source ~/racecar_ws/install/setup.bash```.
+Just as you did for the safety controller, get your team's updated wall following code onto the car. ***Remember to*** ```colcon build``` in the root of your workspace on the car to rebuild it and then ```source ~/racecar_ws/install/setup.bash```.
 
 You will find already on the car a `wall_follower` package that provides a simple example of how to execute driving commands. The node executable is called `example`. You may use this if you wish. See the [muxes section](https://github.com/mit-rss/wall_follower#muxes) for more details on the different topics. 
 
@@ -299,13 +311,11 @@ To activate the wall follower, hold down the right bumper on the joystick (dead 
 
 ***As necessary, tune the parameters in the wall follower so that it works well in the real world.***
 
-Consider why performance on the robot might differ from performance in the simulator and what techniques you can use to improve your controller in deployment. Your final report on Lab 3 should briefly address these topics and include at least one evaluation metric.
+Notice that we have not defined above what "it works well in the real world" means. In both your Lab 3 briefing and in your final report on Lab 3, we will be grading you on how you evaluate your own performance. Although a video of your car cruising along side a wall is nice to look at (and good visual evidence!), we want to see statistics of metrics from repeated runs. For example, if you decide that cross-track error is a good metric, we are going to want to see a statistical analysis of that error. 
 
+Consider why performance on the robot might differ from performance in the simulator and what techniques you can use to improve your controller in deployment. Your final report on Lab 3 should briefly address these topics and include at least one evaluation metric that gives a comparison of performance between the simulation and real performance. 
 
-
-
-
-
+You should also consider a test harness that allows you to repeatedly evaluate performance of your car. The controller you develop in this lab may be useful in future labs. Test harnesses that assess metrics will allow you in future labs to know if you have accidenally changed anything that has caused a regression in performance. 
 
 ## Data Visualization, Recording, and Analysis 
 #### RViz
@@ -318,7 +328,7 @@ To access this on your local machine, you need to forward port 6081. This can be
 ssh -L 6081:localhost:6081 racecar@192.168.1.[CAR_NUMBER]
 ```
 
-This only needs to be done once on your machine, and can be run either inside or outside of your racecar_docker image. If you notice the connection breaks, check to see whether this session died. 
+This ssh command only needs to be done once on your machine, and can be run either inside or outside of your racecar_docker image. If you notice the connection breaks, check to see whether this session died. 
 
 Then, you can navigate to the link
 
