@@ -58,14 +58,16 @@ both Canvas and a team website that demonstrates your work for the semester. In 
 create your website. Beforehand, you'll need to create a Github organization for your team with the name as `rss2026-[TEAM_NUMBER]`.
 This is where your code should be pushed to before the lab deadlines.
 
-You can view the rubrics for the [lab report](https://canvas.mit.edu/courses/31106/assignments/393140) and the
-[briefing](https://canvas.mit.edu/courses/31106/assignments/385210) for more details on specific grading criteria. You will receive
+You can view the rubrics for the [briefing technical grade](https://canvas.mit.edu/courses/36874/assignments/449542), [briefing communication grade](https://canvas.mit.edu/courses/36874/assignments/449541), [report technical grade](https://canvas.mit.edu/courses/36874/assignments/449544), and [report communication grade](https://canvas.mit.edu/courses/36874/assignments/449543) for more details on specific grading criteria. You will receive
 a grade out of 10 points for each. Your final lab grade will also be out of 10 points, based on the following weights:
 
 | Deliverable Grade            | Weight |
 |------------------------------|--------|
-| Briefing grade (out of 10)   | 40%    |
-| Lab report grade (out of 10) | 60%    |
+| Briefing grade (out of 10)   | 50%    |
+| Lab report grade (out of 10) | 50%    |
+
+This lab is worth 15% of your technical grade, and 10% of your ci grade (with briefing and report being equal weighting as shown)
+
 
 The capabilities you should demonstrate through your Lab 3 deliverables are:
 - Prevent crashes using your safety controller while maintaining flexibility.
@@ -79,9 +81,11 @@ be provided at the end of this document, but it is up to your team to decide wha
 
 ### Check off Instructions
 
-Your pushed code and performance on a check off with your team's TA will count toward your **participation grade.**
+Your pushed code and performance on a mid-lab check-in and a post-lab check off with your team's TA will count toward your **participation grade.**
 
-At any point before the check-off deadline, please find your team's assigned TA (or another TA if they are not available) to complete a check-off. It will consist of a few test cases of your controller (both real-world and simulation are fair game), so make sure your code is ready to deploy, ROS parameters are easy to change, etc. Please make sure your entire team is present, as we also want to check everyone's **individual** conceptual and technical understanding.
+There will be 1 check-in mid-lab, on Wednesday, March 4th, which gives us an opportunity to make sure your team is on track. There will also be a check-off with your whole team, which can be completed any time from the day of the briefings until the last OH / lab session before the report deadline. For this lab that would be Thursday, March 5th. 
+
+We will come to you for the mid-lab check-in so make sure your whole team is in attendance on mid-lab check-in day. Then, at any point before the check-off deadline, please find your team's assigned TA (or another TA if they are not available) to complete a check-off. It will consist of a few test cases of your controller (both real-world and simulation are fair game), so make sure your code is ready to deploy, ROS parameters are easy to change, etc. Please make sure your entire team is present, as we also want to check everyone's **individual** conceptual and technical understanding. Make sure each teammate knows the inputs/outputs of all the components in the system, and how what each teammate worked on fits into it. 
 
 ## Part 0: Team Huddle (Meeting Your Team + Setting Up Website + Setting Up Communication Methods)!
 
@@ -90,7 +94,7 @@ Before beginning the lab, you should get to know your team and prepare your team
 so please take some time to set up proper communication channels between all of you. This will help with keeping everyone on the
 same page about collaborative work times, practicing presentations, etc. :)
 
-Please find your teams for Spring 2026 [here]()!
+Please find your teams for Spring 2026 [here](https://docs.google.com/spreadsheets/d/1x2KxuqEFZz1SCrYEMkkCzOjDmxeGgdn0WIL0jwsYBHg/edit?gid=0#gid=0)!
 
 Each team will be using a Github website in order to organize and publish their reports and briefings. Instructions on how to create this site and organization can be found [here](https://github.com/mit-rss/website2022). 
 
