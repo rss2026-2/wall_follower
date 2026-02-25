@@ -158,15 +158,54 @@ Questions to help with evaluating your wall follower:
 
 ## Part 2: Getting Started with the RACECAR Platform!
 
-### What's in your RACECAR bin? (Hardware Visual Guide + Setup)
+### What's in your RACECAR bin? (Hardware)
 
-[Hardware Guide and Setup Reference]()!
+Before making any connections, ensure that your bin has the following items:
+- racecar platform 
+- logitech controller (looks like an xbox game controller)
+- wifi router
+- wifi router power supply (should be labeled)
+- portable battery (one of two types, both should be rectangular)
+- portable battery charger 
+- red brick
+- ethernet cable
+- nimh motor battery (looks like a bunch of small batteries stuck together with a red and black cable connector sticking out)
+
+Once you have your car, search for its number. You can find it in two places; on top of the car's lidar and the top of your router. The car's number will be in block letter stickers. If you have an older car or router there might be other numbers written or labeled on it that you can ignore.
+
+![car_number](media/40500596821_e133bedd83_k.jpg)
+
+Plug your router into an outlet in your team's power strip. Make sure you are using the **12V power supply** that says "TP-Link" on it. **Using the other power supply / charger will fry your router**. 
+
+
+Check the battery status on your racecar by pressing the power button on your car's primary battery.
+This may be the black energizer pictured below or the grey [XTPower](https://www.amazon.com/dp/B07JJTYH8F) battery.
+On the hokuyo cars, the battery sits right on top of the car.
+
+When powered on, these batteries will remain on until power stops being drawn from them, so please remember to unplug your power cables when the car is not in use.
+
+![hokuyo_battery](media/40500597871_792493a139_k.jpg)
+
+If your battery is low, charge it with the 18V adapter. 
+Do not charge your battery while it is plugged in to the jetson (board).   
+Please remember to charge your batteries when you are not working on the cars. 
+
+The battery lasts a surprisingly long time; so as long as you keep the battery charged when you are not working, it can last the entire lab. Remember to unplug it before putting your robot away.
+
+![energizer_power](media/39791091874_4da61acfd2_k.jpg)
+
+Charge your motor battery by plugging it into the charger that looks like a blue block.
+Hold the start button for 2 seconds to charge - you should hear the battery fans begin to spin.
+This battery won't last as long, especially when you are going fast, so remember to charge it when the car is not moving. The jetson will not be affected if the motor battery gets unplugged.
+
 
 ### Connecting To RACECAR
 
 #### Network Setup
 
 Now that you have found your RACECAR's number and your router has been plugged in, you are ready to start connecting to the RACECAR.
+
+Your router will not be connected to the internet unless you plug in the ethernet into an ethernet port (in the wall/table).
 
 From your laptop, please connect to one of these two wifi networks. When prompted, you should enter the password `g0tRACECAR?`
 
