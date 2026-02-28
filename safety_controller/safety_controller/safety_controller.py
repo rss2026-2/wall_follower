@@ -1,0 +1,121 @@
+import numpy as np
+import rclpy
+from rclpy.node import Node
+from sensor_msgs.msg import LaserScan
+from ackermann_msgs.msg import AckermannDriveStamped
+
+class SafetyController(Node):
+
+    def __init__(self):
+        super().__init__("safety_controller")
+        # Declare parameters to make them available for use
+        # DO NOT MODIFY THIS! 
+        self.declare_parameter("scan_topic", "/scan")
+        self.declare_parameter("drive_topic", "/drive")
+
+        # Fetch constants from the ROS parameter server
+        # DO NOT MODIFY THIS! This is necessary for the tests to be able to test varying parameters!
+        self.SCAN_TOPIC = self.get_parameter('scan_topic').get_parameter_value().string_value
+        self.DRIVE_TOPIC = self.get_parameter('drive_topic').get_parameter_value().string_value
+
+        ### Subscribers ###
+        self.lidar_subscriber = self.create_subscription(
+            LaserScan,
+            self.SCAN_TOPIC,
+            self.lidar_callback,
+            10
+        )
+
+        self.drive_subscriber = self.create_subscription(
+            AckermannDriveStamped,
+            self.DRIVE_TOPIC,
+            self.drive_callback,
+            10
+        )
+
+        ### Publishers ###
+        self.stop_publisher = self.create_publisher(
+            AckermannDriveStamped, 
+            self.DRIVE_TOPIC, 
+            10
+        )
+
+        # the static transform from the base link frame to the lidar frame
+        self.base_to_lidar = np.array([
+            [1.0, 0.0, 0.0, 0.275],
+            [0.0, 1.0, 0.0, 0.0],
+            [0.0, 0.0, 1.0, 0.0],
+            [0.0, 0.0, 0.0, 1.0]
+        ])
+    
+
+    def get_lidar_subset_calculator(self, lidar_angle_min, lidar_angle_max, lidar_angle_increment, lidar_ranges):
+        """
+        Returns a function tuned to the lidar's base parameters (lidar_angle_min, lidar_angle_max, and lidar_angle_increment)
+        that makes it easier to get points within an angle range.
+
+        Parameters:
+            - lidar_angle_min: The minimum angle supported by the lidar
+            - lidar_angle_max: The maximum angle supported by the lidar
+            - lidar_angle_increment: The size of the increments in the range [lidar_angle_min, lidar_angle_max]
+            - lidar_ranges: The original lidar data: a 1D array indexed by angle with values corresponding to the distance of the point
+            from the lidar
+        """
+        def subset_calculator(angle_min, angle_max):           
+            if angle_min > angle_max:
+                # Swap angles if given in wrong order
+                angle_min, angle_max = angle_max, angle_min
+
+            #clip angles to the minimum and maximum angles supported by the lidar
+            angle_min = max(angle_min, lidar_angle_min)
+            angle_max = min(angle_max, lidar_angle_max)
+
+            range_low_index = int((angle_min - lidar_angle_min) / lidar_angle_increment)
+            range_high_index = int((angle_max - lidar_angle_min) / lidar_angle_increment)
+
+            desired_indices = np.arange(range_low_index,range_high_index+1)
+            corresponding_angles = lidar_angle_min + desired_indices * lidar_angle_increment
+            ret_array = np.stack((lidar_ranges[range_low_index:range_high_index+1], corresponding_angles), axis=-1)
+            return ret_array
+
+        return subset_calculator
+    
+        
+    # TODO: Write your callback functions here
+    def drive_callback(self, drive_msg):
+        pass
+
+    def lidar_callback(self, lidar_msg):
+        lidar_subset_calc = self.get_lidar_subset_calculator(
+            lidar_msg.angle_min,
+            lidar_msg.angle_max,
+            lidar_msg.angle_increment,
+            lidar_msg.ranges
+        )
+
+        polar_coords = lidar_subset_calc(-np.pi/4, np.pi/4)
+        minimum_dist = np.min(polar_coords[:, 0])
+        if minimum_dist < 0.3:
+            # https://docs.ros.org/en/jade/api/ackermann_msgs/html/msg/AckermannDriveStamped.html
+            new_msg = AckermannDriveStamped()
+
+            # https://docs.ros.org/en/jade/api/ackermann_msgs/html/msg/AckermannDrive.html
+            drive_command = new_msg.drive
+            drive_command.speed = 0.0
+            drive_command.acceleration = 0.0
+            # jerk indicates a desired absolute rate of acceleration change in either direction (increasing or decreasing).
+            drive_command.jerk = 0.0
+
+            self.stop_publisher.publish(new_msg)
+
+
+def main():
+    rclpy.init()
+    safety_controller = SafetyController()
+    rclpy.spin(safety_controller)
+    safety_controller.destroy_node()
+    rclpy.shutdown()
+
+
+if __name__ == '__main__':
+    main()
