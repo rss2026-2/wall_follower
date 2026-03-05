@@ -24,6 +24,7 @@ class SafetyController(Node):
         self.declare_parameter("safety_controller_const", 0.25)
         self.declare_parameter("logger_topic", "/crash_points")
 
+
         self.declare_parameter('bagging_filtered_scans_topic', '/filtered_scans') # used for bagging purposes
 
         # Fetch constants from the ROS parameter server
@@ -104,7 +105,7 @@ class SafetyController(Node):
 
         # calculate the vector for our projected location
         velocity = drive_msg.drive.speed
-        line = self.line_projection(velocity)
+        line = self.line_projection(velocity**2)
 
         # visualize the projected path to location in RViz
         self.visualize_line(line)
