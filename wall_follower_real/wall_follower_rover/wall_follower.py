@@ -100,7 +100,9 @@ class WallFollower(Node):
 
         e = (-self.SIDE * self.DESIRED_DISTANCE) - distance
         # log the desired_distance - observed_distance for bag
-        self.observed_error_publisher.publish(Float32(self.DESIRED_DISTANCE - distance))
+        bag_error = Float32()
+        bag_error.data = self.DESIRED_DISTANCE - distance
+        self.observed_error_publisher.publish(bag_error)
         de = e - self.PREV_ERROR
         prop = 2 * e
         deriv = 0.2 * de/self.TICK_TIME
