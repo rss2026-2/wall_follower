@@ -14,6 +14,7 @@ def generate_launch_description():
             executable='tester',
             name='safety_tester',
             parameters=[
+                safety_params,
                 {'drive_topic': '/vesc/high_level/input/nav_1'},
             ]
         ),
