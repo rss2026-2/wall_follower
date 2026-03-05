@@ -4,6 +4,8 @@ from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
 from ackermann_msgs.msg import AckermannDriveStamped
 from visualization_msgs.msg import Marker
+from std_msgs.msg import Header
+
 
 from safety_controller.visualization_tools import VisualizationTools
 
