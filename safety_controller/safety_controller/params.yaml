@@ -1,7 +1,7 @@
 safety_controller:
   ros__parameters:
     safety_radius: 0.25
-    safety_controller_const: 0.7
+    safety_controller_const: 0.8
 
 safety_tester:
   ros__parameters:
