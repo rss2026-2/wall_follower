@@ -2,3 +2,7 @@ safety_controller:
   ros__parameters:
     safety_radius: 0.25
     safety_controller_const: 0.5
+
+safety_tester:
+  ros__parameters:
+    drive_speed: 2.0
