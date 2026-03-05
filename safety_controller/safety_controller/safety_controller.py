@@ -19,7 +19,7 @@ class SafetyController(Node):
         self.declare_parameter("safety_radius", 0.25)
         self.declare_parameter("safety_controller_const", 0.25)
         self.declare_parameter("logger_topic", "/crash_points")
-        
+
         # Fetch constants from the ROS parameter server
         # DO NOT MODIFY THIS! This is necessary for the tests to be able to test varying parameters!
         self.SCAN_TOPIC = self.get_parameter('scan_topic').get_parameter_value().string_value
@@ -65,7 +65,7 @@ class SafetyController(Node):
         ])
 
         self.lidar_msg = None
-    
+
     # TODO: Write your callback functions here
 
     def drive_callback(self, drive_msg):
@@ -90,8 +90,8 @@ class SafetyController(Node):
 
         # calculate the vector for our projected location
         velocity = drive_msg.drive.speed
-        line = self.line_projection(velocity)
-        
+        line = self.line_projection(velocity**2)
+
         # visualize the projected path to location in RViz
         self.visualize_line(line)
 
@@ -129,7 +129,7 @@ class SafetyController(Node):
         drive_command.jerk = 0.0
 
         self.stop_publisher.publish(new_msg)
-        
+
     def get_lidar_subset_calculator(self, lidar_angle_min, lidar_angle_max, lidar_angle_increment, lidar_ranges):
         """
         Returns a function tuned to the lidar's base parameters (lidar_angle_min, lidar_angle_max, and lidar_angle_increment)
@@ -163,7 +163,7 @@ class SafetyController(Node):
             angle_min = max(angle_min, lidar_angle_min)
             angle_max = min(angle_max, lidar_angle_max)
 
-            # Compute the range indices associated with the minumum and maximum angle 
+            # Compute the range indices associated with the minumum and maximum angle
             range_low_index = int((angle_min - lidar_angle_min) / lidar_angle_increment)
             range_high_index = int((angle_max - lidar_angle_min) / lidar_angle_increment)
 
@@ -173,26 +173,26 @@ class SafetyController(Node):
             corresponding_angles = lidar_angle_min + desired_indices * lidar_angle_increment
             # Use the min and max index values to clip ranges to valid points
             corresponding_ranges = np.array(lidar_ranges[range_low_index:range_high_index+1], dtype="float32")
-            
+
             # Distance mask to filter out points outside given range
             distance_mask = (distance_min <= corresponding_ranges) & (corresponding_ranges <= distance_max)
-            
+
             # Apply distance mask to angles
             valid_angles = corresponding_angles[distance_mask]
             # Apply distance mask to ranges
             valid_ranges = corresponding_ranges[distance_mask]
-            
+
             # Convert valid points to Cartesian coordinates
             x = valid_ranges * np.cos(valid_angles)
             y = valid_ranges * np.sin(valid_angles)
-            
+
             # Stack Cartestian coordinates together and transpose
             cartesian_coords = np.vstack((x, y)).T # Shape: (num_points, 2)
-            
+
             return cartesian_coords
 
         return subset_calculator
-    
+
     def visualize_line(self, line_end_point):
         """
         Returns None
@@ -210,7 +210,7 @@ class SafetyController(Node):
             y = [0.0, float(end_y)],
             publisher = self.line_publisher,
         )
-        
+
     def line_projection(self, velocity):
         """
         Returns the vector representing the projected location of base_link with respect to base_link.
@@ -224,25 +224,25 @@ class SafetyController(Node):
         projected_distance = self.SAFETY_CONTROLLER_CONST * velocity + self.SAFETY_RADIUS
         line = np.array([projected_distance, 0]) # x direction is forward
         return line
-    
+
     def calculate_deltas(self, coords, line):
         """
         Takes in the lidar scan points in the desired range and calculates their
         distance to the line of our projected path for base_link.
 
         Args:
-            - coords (ndarray): (num_points, 2) Cartesian coordinates of each scan point w.r.t. base link. 
+            - coords (ndarray): (num_points, 2) Cartesian coordinates of each scan point w.r.t. base link.
             - line (ndarray) : (1, 2) Vector to the projected location of base_link.
         """
         self.get_logger().info(f'calculate_deltas input: {len(coords)}')
-        
+
         # Calculate the unit vector associated with the line
         unit_vec = line/np.linalg.norm(line)
-        
+
         # Calculate the cross product between each coordinate and the unit vector
         # This gets distances to the projected path line
         deltas = np.cross(coords, unit_vec)
-        
+
         # Return distances to projected path line
         return deltas
 
