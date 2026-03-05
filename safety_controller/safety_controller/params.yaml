@@ -5,4 +5,4 @@ safety_controller:
 
 safety_tester:
   ros__parameters:
-    drive_speed: 2.0
+    drive_speed: 0.5
