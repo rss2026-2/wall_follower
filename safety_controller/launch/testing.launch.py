@@ -28,12 +28,4 @@ def generate_launch_description():
                 {'drive_topic_publish':'/vesc/low_level/input/safety'},
             ]
         ),
-        Node(
-            package='safety_controller',
-            executable='logger',
-            name='error_logger',
-            parameters=[
-                
-            ]
-        )
     ])
