@@ -23,6 +23,8 @@ class WallFollower(Node):
         self.declare_parameter("velocity", 1.0)
         self.declare_parameter("desired_distance", 1.0)
 
+        self.declare_parameter('bagging_observed_error_topic', '/observed_error') # also used for bagging purposes
+
         # Fetch constants from the ROS parameter server
         # DO NOT MODIFY THIS! This is necessary for the tests to be able to test varying parameters!
         self.SCAN_TOPIC = self.get_parameter('scan_topic').get_parameter_value().string_value
@@ -30,6 +32,8 @@ class WallFollower(Node):
         self.SIDE = self.get_parameter('side').get_parameter_value().integer_value
         self.VELOCITY = self.get_parameter('velocity').get_parameter_value().double_value
         self.DESIRED_DISTANCE = self.get_parameter('desired_distance').get_parameter_value().double_value
+
+        self.OBSERVED_ERROR_TOPIC = self.get_parameter('bagging_observed_error_topic').get_parameter_value().string_value
 
         # for PID
         self.PREV_ERROR = 0
@@ -49,7 +53,13 @@ class WallFollower(Node):
             self.SCAN_TOPIC,
             self.listener_callback,
             10)
-        self.lidar_data
+
+        self.observed_error_publisher = self.create_publisher(
+            Float32,
+            self.OBSERVED_ERROR_TOPIC,
+            10
+
+        )
 
         # TODO: Write your callback functions here
     def listener_callback(self, lidar_msg):
@@ -88,6 +98,8 @@ class WallFollower(Node):
         distance = -b / math.sqrt(m**2 + 1) # fit OLS
 
         e = (-self.SIDE * self.DESIRED_DISTANCE) - distance
+        # log the desired_distance - observed_distance for bag
+        self.observed_error_publisher.publish(Float32(self.DESIRED_DISTANCE - distance))
         de = e - self.PREV_ERROR
         prop = 2 * e
         deriv = 0.2 * de/self.TICK_TIME
