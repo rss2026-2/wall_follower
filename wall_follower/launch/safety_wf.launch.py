@@ -19,7 +19,8 @@ def generate_launch_description():
             name='wall_follower',
             parameters=[
                 wf_params,
-                {'drive_topic': '/vesc/low_level/ackermann_cmd'},
+                {'scan_topic': '/scan'},
+                {'drive_topic': '/vesc/high_level/input_nav_1'},
             ]
         ),
         Node(
