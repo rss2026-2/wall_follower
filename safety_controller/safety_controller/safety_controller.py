@@ -83,8 +83,6 @@ class SafetyController(Node):
 
         self.lidar_msg = None
 
-    # TODO: Write your callback functions here
-
     def drive_callback(self, drive_msg):
         """
         Based on a drive command, interrupt the drive command with a stop command
@@ -96,7 +94,6 @@ class SafetyController(Node):
         """
         lidar_msg = self.lidar_msg
         if lidar_msg is None: return
-        self.get_logger().info(f'{len(lidar_msg.ranges)}')
         # function to filter our laser data
         lidar_subset_calc = self.get_lidar_subset_calculator(
             lidar_msg.angle_min,
@@ -125,7 +122,6 @@ class SafetyController(Node):
         self.get_logger().info(f'pre-masked deltas: {len(deltas)}')
         mask = abs(deltas) < self.SAFETY_RADIUS
         filtered_cartesian = deltas[mask]
-        self.get_logger().info(f'Deltas: {filtered_cartesian}')
         if len(filtered_cartesian) > 0:
             self.publish_stop()
 

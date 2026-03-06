@@ -15,7 +15,6 @@ def generate_launch_description():
             name='safety_tester',
             parameters=[
                 safety_params,
-                {'drive_topic': '/vesc/high_level/input/nav_1'},
             ]
         ),
         Node(
@@ -24,9 +23,14 @@ def generate_launch_description():
             name='safety_controller',
             parameters=[
                 safety_params,
-                {'scan_topic': '/scan'},
-                {'drive_topic_listen': '/vesc/low_level/ackermann_cmd'},
-                {'drive_topic_publish':'/vesc/low_level/input/safety'},
             ]
         ),
+        Node(
+            package='safety_controller',
+            executable='logger',
+            name='logger_node',
+            parameters=[
+                safety_params,
+            ]
+        )
     ])
