@@ -8,12 +8,17 @@ def generate_launch_description():
         get_package_share_directory('safety_controller'),
         'params.yaml'
     )
+    wf_params = os.path.join(
+        get_package_share_directory('wall_follower'),
+        'wall_follower_rover/params.yaml'
+    )
     return LaunchDescription([
         Node(
             package='wall_follower_rover',
             executable='wall_follower',
             name='wall_follower',
             parameters=[
+                wf_params,
                 {'drive_topic': '/vesc/low_level/ackermann_cmd'},
             ]
         ),
