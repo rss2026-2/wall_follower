@@ -23,7 +23,7 @@ class WallFollower(Node):
         self.declare_parameter("side", 1)
         self.declare_parameter("velocity", 1.0)
         self.declare_parameter("desired_distance", 1.0)
-        self.declare_paramter("max_steering_angle",0.34)
+        self.declare_parameter("max_steering_angle",0.34)
         self.declare_parameter('bagging_observed_error_topic', '/observed_error') # also used for bagging purposes
         self.declare_parameter('wall_viz_topic', "/wall_estimate")
 
@@ -141,7 +141,7 @@ class WallFollower(Node):
             x_line,
             y_line,
             self.wall_estimator_viz,
-            color=(255, 192, 203),
+            color=(255.0, 192.0, 203.0),
             frame=frame,
         )
 
