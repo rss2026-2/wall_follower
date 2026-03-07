@@ -23,8 +23,9 @@ class WallFollower(Node):
         self.declare_parameter("side", 1)
         self.declare_parameter("velocity", 1.0)
         self.declare_parameter("desired_distance", 1.0)
-
+        self.declare_paramter("max_steering_angle",0.34)
         self.declare_parameter('bagging_observed_error_topic', '/observed_error') # also used for bagging purposes
+        self.declare_parameter('wall_viz_topic', "/wall_estimate")
 
         # Fetch constants from the ROS parameter server
         # DO NOT MODIFY THIS! This is necessary for the tests to be able to test varying parameters!
@@ -33,9 +34,9 @@ class WallFollower(Node):
         self.SIDE = self.get_parameter('side').get_parameter_value().integer_value
         self.VELOCITY = self.get_parameter('velocity').get_parameter_value().double_value
         self.DESIRED_DISTANCE = self.get_parameter('desired_distance').get_parameter_value().double_value
-
+        self.MAX_STEERING_ANGLE = self.get_parameter('max_steering_angle').get_parameter_value().double_value
         self.OBSERVED_ERROR_TOPIC = self.get_parameter('bagging_observed_error_topic').get_parameter_value().string_value
-
+        self.WALL_VIZ_TOPIC = self.get_parameter('wall_viz_topic').get_parameter_value().string_value
         # for PID
         self.PREV_ERROR = 0
         self.TICK_TIME = 0.02
@@ -60,6 +61,12 @@ class WallFollower(Node):
             self.OBSERVED_ERROR_TOPIC,
             10
 
+        )
+
+        self.wall_estimator_viz = self.create_publisher(
+            Marker,
+            self.WALL_VIZ_TOPIC,
+            1
         )
 
         # TODO: Write your callback functions here
@@ -95,6 +102,7 @@ class WallFollower(Node):
         y = A * np.sin(a)
 
         m, b = np.polyfit(x,y,1)
+        self.publish_wall_viz(m,b,x,lidar_msg.header.frame_id)
         line_angle = math.atan(m)
         distance = -b / math.sqrt(m**2 + 1) # fit OLS
 
@@ -108,9 +116,34 @@ class WallFollower(Node):
         deriv = 0.2 * de/self.TICK_TIME
 
         self.PREV_ERROR = e
+
         steering_angle = prop + deriv + 2 * line_angle
+        # TODO: we need to clamp the car's steering angle to the actual max angle
+        if steering_angle < 0:
+            steering_angle = max(-self.MAX_STEERING_ANGLE, steering_angle)
+        else:
+            steering_angle = min(self.MAX_STEERING_ANGLE, steering_angle)
 
         self.publish_msg(steering_angle)
+
+    def publish_wall_viz(self,m,b,x,frame):
+        """
+        A helper to publish a line visualization according to the visualization_tool helper node.
+
+        :param m: Slope of the line
+        :param b: Y-intercept of the line
+        :param frame: the frame_id of lidar messages (allows marker to be published
+        in the same frame as the lidar)
+        """
+        x_line = np.linspace(np.min(x), np.max(x), 20)
+        y_line = m * x_line + b
+        VisualizationTools.plot_line(
+            x_line,
+            y_line,
+            self.wall_estimator_viz,
+            color=(255, 192, 203),
+            frame=frame,
+        )
 
     def publish_msg(self, steering_angle):
         """
