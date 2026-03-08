@@ -124,7 +124,8 @@ class SafetyController(Node):
         filtered_cartesian = deltas[mask]
         if len(filtered_cartesian) > 0:
             self.get_logger().info(f"Sending a stop command of size: {len(filtered_cartesian)}")
-            self.publish_stop(angle=drive_msg.drive.steering_angle)
+            # self.publish_stop(angle=drive_msg.drive.steering_angle)
+            self.publish_stop(angle=0)
 
     def lidar_callback(self, lidar_msg):
         self.lidar_msg = lidar_msg
