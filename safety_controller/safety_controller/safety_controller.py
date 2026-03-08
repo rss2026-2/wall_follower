@@ -22,7 +22,7 @@ class SafetyController(Node):
         self.declare_parameter("scan_topic", "/scan")
         self.declare_parameter("drive_topic_listen", "/vesc/low_level/ackermann_cmd") # publish to the highest priority to override other drive commands
         self.declare_parameter('drive_topic_publish', "/vesc/low_level/input/safety")
-        self.declare_parameter("safety_radius", 0.25)
+        self.declare_parameter("safety_radius", 0.25) # the clearance needed to the side of the car, and also the front
         self.declare_parameter("safety_controller_const", 0.25)
         self.declare_parameter("logger_topic", "/crash_points")
 
@@ -92,6 +92,7 @@ class SafetyController(Node):
         Args:
             - drive_msg (AckermannDriveStamped): AckermanDriveStamped msg from other controllers
         """
+
         lidar_msg = self.lidar_msg
         if lidar_msg is None: return
         # function to filter our laser data
@@ -123,12 +124,12 @@ class SafetyController(Node):
         filtered_cartesian = deltas[mask]
         if len(filtered_cartesian) > 0:
             self.get_logger().info(f"Sending a stop command of size: {len(filtered_cartesian)}")
-            self.publish_stop()
+            self.publish_stop(angle=drive_msg.drive.steering_angle)
 
     def lidar_callback(self, lidar_msg):
         self.lidar_msg = lidar_msg
 
-    def publish_stop(self):
+    def publish_stop(self, angle=None):
         """
         Publishes a command for the car to stop.
         """
@@ -141,6 +142,8 @@ class SafetyController(Node):
         drive_command.acceleration = 0.0
         # jerk indicates a desired absolute rate of acceleration change in either direction (increasing or decreasing).
         drive_command.jerk = 0.0
+        if angle is not None:
+            drive_command.steering_angle = angle
 
         self.stop_publisher.publish(new_msg)
 
@@ -247,6 +250,8 @@ class SafetyController(Node):
         Args:
             - coords (ndarray): (num_points, 2) Cartesian coordinates of each scan point w.r.t. base link.
             - line (ndarray) : (1, 2) Vector to the projected location of base_link.
+        Returns:
+            cross products between each coordinate and the unit vector of the line
         """
         self.get_logger().info(f'calculate_deltas input: {len(coords)}')
 
