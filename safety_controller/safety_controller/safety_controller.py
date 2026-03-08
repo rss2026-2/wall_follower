@@ -105,7 +105,7 @@ class SafetyController(Node):
 
         # calculate the vector for our projected location
         velocity = drive_msg.drive.speed
-        line = self.line_projection(velocity**2)
+        line = self.line_projection(velocity)
 
         # visualize the projected path to location in RViz
         self.visualize_line(line)
@@ -253,7 +253,6 @@ class SafetyController(Node):
         Returns:
             cross products between each coordinate and the unit vector of the line
         """
-        self.get_logger().info(f'calculate_deltas input: {len(coords)}')
 
         # Calculate the unit vector associated with the line
         unit_vec = line/np.linalg.norm(line)
