@@ -248,7 +248,6 @@ class SafetyController(Node):
             - coords (ndarray): (num_points, 2) Cartesian coordinates of each scan point w.r.t. base link.
             - line (ndarray) : (1, 2) Vector to the projected location of base_link.
         """
-        self.get_logger().info(f'calculate_deltas input: {len(coords)}')
 
         # Calculate the unit vector associated with the line
         unit_vec = line/np.linalg.norm(line)
