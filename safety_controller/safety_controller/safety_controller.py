@@ -119,10 +119,10 @@ class SafetyController(Node):
 
         # if any delta within the car safety radius, terminate the drive command
         deltas = self.calculate_deltas(cartesian_coords, line)
-        self.get_logger().info(f'pre-masked deltas: {len(deltas)}')
         mask = abs(deltas) < self.SAFETY_RADIUS
         filtered_cartesian = deltas[mask]
         if len(filtered_cartesian) > 0:
+            self.get_logger().info(f"Sending a stop command of size: {len(filtered_cartesian)}")
             self.publish_stop()
 
     def lidar_callback(self, lidar_msg):
@@ -132,7 +132,7 @@ class SafetyController(Node):
         """
         Publishes a command for the car to stop.
         """
-        # https://docs.ros.org/en/jade/api/ackermann_msgs/html/msg/AckermannDriveStamped.html
+        # https://docs.ros.org/en/jade/api/ackermann_msgs/html/msg/AckermannDriveStamped.
         new_msg = AckermannDriveStamped()
 
         # https://docs.ros.org/en/jade/api/ackermann_msgs/html/msg/AckermannDrive.html
