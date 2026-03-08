@@ -25,12 +25,4 @@ def generate_launch_description():
                 safety_params,
             ]
         ),
-        Node(
-            package='safety_controller',
-            executable='logger',
-            name='logger_node',
-            parameters=[
-                safety_params,
-            ]
-        )
-    ])
+        ])
