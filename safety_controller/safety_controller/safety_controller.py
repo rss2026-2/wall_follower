@@ -104,7 +104,7 @@ class SafetyController(Node):
 
         # calculate the vector for our projected location
         velocity = drive_msg.drive.speed
-        line = self.line_projection(velocity**1.6)
+        line = self.line_projection(velocity**1.4)
 
         # visualize the projected path to location in RViz
         self.visualize_line(line)

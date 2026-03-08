@@ -4,7 +4,7 @@ safety_controller:
     drive_topic_publish: '/vesc/low_level/input/safety'
     scan_topic: '/scan'
     safety_radius: 0.25
-    safety_controller_const: 0.5
+    safety_controller_const: 0.7
 
 safety_tester:
   ros__parameters:
