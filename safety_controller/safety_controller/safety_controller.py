@@ -22,7 +22,7 @@ class SafetyController(Node):
         self.declare_parameter("scan_topic", "/scan")
         self.declare_parameter("drive_topic_listen", "/vesc/low_level/ackermann_cmd") # publish to the highest priority to override other drive commands
         self.declare_parameter('drive_topic_publish', "/vesc/low_level/input/safety")
-        self.declare_parameter("safety_radius", 0.25)
+        self.declare_parameter("safety_radius", 0.25) # the clearance needed to the side of the car, and also the front
         self.declare_parameter("safety_controller_const", 0.25)
         self.declare_parameter("logger_topic", "/crash_points")
 
@@ -83,8 +83,6 @@ class SafetyController(Node):
 
         self.lidar_msg = None
 
-    # TODO: Write your callback functions here
-
     def drive_callback(self, drive_msg):
         """
         Based on a drive command, interrupt the drive command with a stop command
@@ -94,9 +92,9 @@ class SafetyController(Node):
         Args:
             - drive_msg (AckermannDriveStamped): AckermanDriveStamped msg from other controllers
         """
+
         lidar_msg = self.lidar_msg
         if lidar_msg is None: return
-        self.get_logger().info(f'{len(lidar_msg.ranges)}')
         # function to filter our laser data
         lidar_subset_calc = self.get_lidar_subset_calculator(
             lidar_msg.angle_min,
@@ -107,7 +105,7 @@ class SafetyController(Node):
 
         # calculate the vector for our projected location
         velocity = drive_msg.drive.speed
-        line = self.line_projection(velocity**2)
+        line = self.line_projection(velocity)
 
         # visualize the projected path to location in RViz
         self.visualize_line(line)
@@ -122,21 +120,20 @@ class SafetyController(Node):
 
         # if any delta within the car safety radius, terminate the drive command
         deltas = self.calculate_deltas(cartesian_coords, line)
-        self.get_logger().info(f'pre-masked deltas: {len(deltas)}')
         mask = abs(deltas) < self.SAFETY_RADIUS
         filtered_cartesian = deltas[mask]
-        self.get_logger().info(f'Deltas: {filtered_cartesian}')
         if len(filtered_cartesian) > 0:
-            self.publish_stop()
+            self.get_logger().info(f"Sending a stop command of size: {len(filtered_cartesian)}")
+            self.publish_stop(angle=drive_msg.drive.steering_angle)
 
     def lidar_callback(self, lidar_msg):
         self.lidar_msg = lidar_msg
 
-    def publish_stop(self):
+    def publish_stop(self, angle=None):
         """
         Publishes a command for the car to stop.
         """
-        # https://docs.ros.org/en/jade/api/ackermann_msgs/html/msg/AckermannDriveStamped.html
+        # https://docs.ros.org/en/jade/api/ackermann_msgs/html/msg/AckermannDriveStamped.
         new_msg = AckermannDriveStamped()
 
         # https://docs.ros.org/en/jade/api/ackermann_msgs/html/msg/AckermannDrive.html
@@ -145,6 +142,8 @@ class SafetyController(Node):
         drive_command.acceleration = 0.0
         # jerk indicates a desired absolute rate of acceleration change in either direction (increasing or decreasing).
         drive_command.jerk = 0.0
+        if angle is not None:
+            drive_command.steering_angle = angle
 
         self.stop_publisher.publish(new_msg)
 
@@ -251,8 +250,9 @@ class SafetyController(Node):
         Args:
             - coords (ndarray): (num_points, 2) Cartesian coordinates of each scan point w.r.t. base link.
             - line (ndarray) : (1, 2) Vector to the projected location of base_link.
+        Returns:
+            cross products between each coordinate and the unit vector of the line
         """
-        self.get_logger().info(f'calculate_deltas input: {len(coords)}')
 
         # Calculate the unit vector associated with the line
         unit_vec = line/np.linalg.norm(line)
