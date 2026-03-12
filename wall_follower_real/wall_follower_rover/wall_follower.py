@@ -24,7 +24,7 @@ class WallFollower(Node):
         self.declare_parameter("velocity", 2.0)
         self.declare_parameter("desired_distance", 1.0)
         self.declare_parameter("max_steering_angle",0.34)
-        self.declare_parameter('bagging_observed_error_topic', '/observed_error') # also used for bagging purposes
+        self.declare_parameter('bagging_observed_error_topic', '/observed_error_real') # also used for bagging purposes
         self.declare_parameter('wall_viz_topic', "/wall_estimate")
 
         # Fetch constants from the ROS parameter server
@@ -107,9 +107,10 @@ class WallFollower(Node):
         distance = -b / math.sqrt(m**2 + 1) # fit OLS
 
         e = (-self.SIDE * self.DESIRED_DISTANCE) - distance
+
         # log the desired_distance - observed_distance for bag
         bag_error = Float32()
-        bag_error.data = self.DESIRED_DISTANCE - distance
+        bag_error.data = e
         self.observed_error_publisher.publish(bag_error)
         de = e - self.PREV_ERROR
         prop = 2 * e
