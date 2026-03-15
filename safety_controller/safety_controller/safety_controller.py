@@ -238,6 +238,8 @@ class SafetyController(Node):
         Output:
             - line (ndarray): (1, 2) 2d vector (x, y) of the end point of the projected line.
         """
+        if velocity < 0.4 :
+            velocity = 0
         projected_distance = self.SAFETY_CONTROLLER_CONST * velocity + self.SAFETY_RADIUS
         line = np.array([projected_distance, 0]) # x direction is forward
         return line
